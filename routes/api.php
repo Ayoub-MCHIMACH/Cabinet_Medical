@@ -1,5 +1,6 @@
 <?php
 use \App\Http\Controllers;
+use App\Http\Controllers\AppointmentsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -13,6 +14,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 // Public routes
 Route::post('/login', [\App\Http\Controllers\AuthController::class, 'login']);
 Route::post('/register', [\App\Http\Controllers\AuthController::class, 'register']);
+Route::get('/appointments/statistics', [AppointmentsController::class, 'getAppointmentStatistics']);
+
 
 // Protected routes
 Route::group(['middleware' => ['auth:sanctum', 'role:admin']], function () {
@@ -23,6 +26,7 @@ Route::group(['middleware' => ['auth:sanctum', 'role:admin']], function () {
     Route::resource('/secretary', \App\Http\Controllers\SecretaryController::class);
     Route::get('/patient/{id}/report-pdf', [Controllers\PatientsController::class, 'generateReportPDF']);
     Route::patch('/appointments/{appointment}/approve', [Controllers\AppointmentsController::class, 'approve']);
+
 
 
 

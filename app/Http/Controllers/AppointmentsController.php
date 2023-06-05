@@ -7,7 +7,9 @@ use App\Http\Resources\AppointmentResource;
 use App\Http\Resources\AppointmentsWithPatientResource;
 use App\Models\Appointment;
 use App\Models\Patient;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class AppointmentsController extends Controller
 {
@@ -26,6 +28,26 @@ class AppointmentsController extends Controller
     public function create()
     {
         //
+    }
+
+    public function getAppointmentStatistics()
+    {
+        $year = Carbon::now()->year;
+        $appointments = Appointment::select(
+            DB::raw('MONTH(start_time) as month'),
+            DB::raw('COUNT(*) as appointment_count')
+        )
+            ->whereYear('start_time', $year)
+            ->groupBy(DB::raw('MONTH(start_time)'))
+            ->get();
+
+        $statistics = [];
+        foreach ($appointments as $appointment) {
+            $monthName = Carbon::create()->month($appointment->month)->format('F');
+            $statistics[$monthName] = $appointment->appointment_count;
+        }
+
+        return response()->json($statistics);
     }
 
     /**
